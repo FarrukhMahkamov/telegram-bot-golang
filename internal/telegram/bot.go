@@ -31,17 +31,16 @@ func (b *Bot) Start() error {
 func (b *Bot) handleUpdate(updates tgbotapi.UpdatesChannel) {
 	for update := range updates {
 		if update.Message != nil { // If we got a message
+
+			if update.Message.IsCommand() {
+				b.handleCommand(update.Message)
+				continue
+			}
+
 			b.handleMessage(update.Message)
+			continue
 		}
 	}
-}
-
-func (b *Bot) handleMessage(message *tgbotapi.Message) {
-	log.Printf("[%s] %s", message.From.UserName, message.Text)
-	msg := tgbotapi.NewMessage(message.Chat.ID, message.Text)
-
-	msg.ReplyToMessageID = message.MessageID
-	b.bot.Send(msg)
 }
 
 // Init channel update
